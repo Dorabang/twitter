@@ -1,2 +1,3 @@
 # twitter
-twitter clone coding
+
+Cloning Twitter with React and Firebase
