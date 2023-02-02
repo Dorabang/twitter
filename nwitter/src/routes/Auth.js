@@ -5,7 +5,8 @@ import { useState } from 'react';
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [newAccount, setNewAcount] = useState(true);
+  const [newAccount, setNewAccount] = useState(true);
+  const [error, setError] = useState('');
 
   const onChange = (event) => {
     const {
@@ -35,9 +36,11 @@ const Auth = () => {
       }
       console.log(data);
     } catch (error) {
-      console.log(error);
+      setError(error.message);
     }
   };
+
+  const toggleAccount = () => setNewAccount((prev) => !prev);
 
   return (
     <div>
@@ -65,7 +68,11 @@ const Auth = () => {
             onChange={onChange}
           />
         </label>
+        <span>{error}</span>
         <input type='submit' value={newAccount ? 'Create Acount' : 'Login'} />
+        <span onClick={toggleAccount}>
+          {newAccount ? 'Login' : 'Create Account'}
+        </span>
       </form>
 
       <div>
