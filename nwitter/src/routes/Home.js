@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { dbService } from 'fbase';
 import { addDoc, collection } from 'firebase/firestore';
 
 const Home = () => {
   const [sweet, setSweet] = useState('');
+  const [sweets, setSweets] = useState([]);
+  const getSweets = async () => {
+    const dbSweets = await dbService.collection('sweets').get();
+    dbSweets.forEach((document) => {
+      const sweetObj = {
+        ...document.data(),
+        id: document.id,
+      };
+      setSweets((prev) => [sweetObj, ...prev]);
+    });
+  };
+  useEffect(() => {
+    getSweets();
+  }, []);
+
   const onSubmit = async (event) => {
     event.preventDefault();
     await addDoc(collection(dbService, 'sweets'), {
@@ -31,6 +46,13 @@ const Home = () => {
         />
         <input type='submit' value='Sweet' />
       </form>
+      <div>
+        {sweets.map((sweet) => (
+          <div key={sweet.id}>
+            <h4>{sweet.sweet}</h4>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
