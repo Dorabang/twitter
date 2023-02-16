@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { dbService } from 'fbase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, orderBy } from 'firebase/firestore';
 
-const Home = () => {
+const Home = ({ userObj }) => {
   const [sweet, setSweet] = useState('');
   const [sweets, setSweets] = useState([]);
+  /*
+  // 아래 방법을 사용하면 re-render 발생
+
   const getSweets = async () => {
     const dbSweets = await dbService.collection('sweets').get();
     dbSweets.forEach((document) => {
@@ -15,15 +18,31 @@ const Home = () => {
       setSweets((prev) => [sweetObj, ...prev]);
     });
   };
+
   useEffect(() => {
-    getSweets();
+      setSweets();
+  }, []);
+
+  */
+  useEffect(() => {
+    dbService
+      .collection('sweets')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        const sweetArray = snapshot.docs.reverse().map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSweets(sweetArray);
+      });
   }, []);
 
   const onSubmit = async (event) => {
     event.preventDefault();
     await addDoc(collection(dbService, 'sweets'), {
-      sweet,
+      text: sweet,
       createdAt: Date.now(),
+      creatorId: userObj.uid,
     });
     setSweet('');
   };
@@ -49,7 +68,7 @@ const Home = () => {
       <div>
         {sweets.map((sweet) => (
           <div key={sweet.id}>
-            <h4>{sweet.sweet}</h4>
+            <h4>{sweet.text}</h4>
           </div>
         ))}
       </div>
