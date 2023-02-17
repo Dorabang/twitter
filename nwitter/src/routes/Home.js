@@ -8,7 +8,7 @@ import Sweet from 'components/Sweet';
 const Home = ({ userObj }) => {
   const [sweet, setSweet] = useState('');
   const [sweets, setSweets] = useState([]);
-  const [attachment, setAttachment] = useState();
+  const [attachment, setAttachment] = useState('');
   useEffect(() => {
     dbService
       .collection('sweets')
@@ -77,7 +77,7 @@ const Home = ({ userObj }) => {
         <input type='submit' value='Sweet' />
         {attachment && (
           <div>
-            <img src={attachment} width='50px' height='50px' />
+            <img src={attachment} width='200px' height='200px' alt='이미지' />
             <button onClick={onClearAttachment}>Clear</button>
           </div>
         )}

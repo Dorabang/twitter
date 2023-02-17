@@ -1,15 +1,25 @@
-import { dbService } from 'fbase';
+import { dbService, storageService } from 'fbase';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 import React, { useState } from 'react';
 
 const Sweet = ({ sweetObj, isOwner }) => {
   const [editing, setEditing] = useState(false);
   const [newSweet, setNewSweet] = useState(sweetObj.text);
   const SweetTextRef = doc(dbService, 'sweets', `${sweetObj.id}`);
+  const desertRef = ref(storageService, sweetObj.attachmentUrl);
   const onDeleteClick = async () => {
     const ok = window.confirm('Are you sure you want to delete this sweet?');
     if (ok === true) {
-      await deleteDoc(SweetTextRef);
+      try {
+        await deleteDoc(SweetTextRef);
+        if (sweetObj.attachmentUrl !== '') {
+          await deleteObject(desertRef);
+          // await storageService.refFromURL(sweetObj.attachmentUrl).delete();
+        }
+      } catch {
+        window.alert('Failed to delete sweet.');
+      }
     }
   };
 
@@ -46,9 +56,14 @@ const Sweet = ({ sweetObj, isOwner }) => {
         </>
       ) : (
         <>
-          <h4>{sweetObj.text}</h4>
+          <p>{sweetObj.text}</p>
           {sweetObj.attachmentUrl && (
-            <img src={sweetObj.attachmentUrl} width='50px' height='50px' />
+            <img
+              src={sweetObj.attachmentUrl}
+              width='200px'
+              height='200px'
+              alt='이미지'
+            />
           )}
           {isOwner && (
             <>
