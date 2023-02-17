@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dbService } from 'fbase';
-import { addDoc, collection, orderBy } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import Sweet from 'components/Sweet';
 
 const Home = ({ userObj }) => {
