@@ -47,6 +47,9 @@ const Sweet = ({ sweetObj, isOwner }) => {
       ) : (
         <>
           <h4>{sweetObj.text}</h4>
+          {sweetObj.attachmentUrl && (
+            <img src={sweetObj.attachmentUrl} width='50px' height='50px' />
+          )}
           {isOwner && (
             <>
               <button onClick={toggleEditing}>Edit</button>

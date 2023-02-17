@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { dbService } from 'fbase';
+import { dbService, storageService } from 'fbase';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
 import { addDoc, collection } from 'firebase/firestore';
 import Sweet from 'components/Sweet';
 
@@ -22,12 +24,21 @@ const Home = ({ userObj }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await addDoc(collection(dbService, 'sweets'), {
+    let attachmentUrl = '';
+    if (attachment !== '') {
+      const attachmentRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
+      await uploadString(attachmentRef, attachment, 'data_url');
+      attachmentUrl = await getDownloadURL(ref(storageService, attachmentRef));
+    }
+    const sweetObj = {
       text: sweet,
       createdAt: Date.now(),
       creatorId: userObj.uid,
-    });
+      attachmentUrl,
+    };
+    await addDoc(collection(dbService, 'sweets'), sweetObj);
     setSweet('');
+    setAttachment('');
   };
 
   const onChange = (event) => {
